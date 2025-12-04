@@ -16,13 +16,16 @@ public class AppConfig {
         ObjectMapper objectMapper = new ObjectMapper();
 
         objectMapper.registerModule(new JavaTimeModule());
+
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(objectMapper);
 
-        restTemplate().getMessageConverters().clear();
-        restTemplate().getMessageConverters().add(converter);
-        return restTemplate();
+        restTemplate.getMessageConverters().removeIf(
+                m->m.getClass().getName().equals(MappingJackson2HttpMessageConverter.class.getName())
+        );
+        restTemplate.getMessageConverters().add(converter);
+        return restTemplate;
     }
 }
