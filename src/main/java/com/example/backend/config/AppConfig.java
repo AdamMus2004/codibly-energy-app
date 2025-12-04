@@ -22,9 +22,7 @@ public class AppConfig {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(objectMapper);
 
-        restTemplate.getMessageConverters().removeIf(
-                m->m.getClass().getName().equals(MappingJackson2HttpMessageConverter.class.getName())
-        );
+        restTemplate.getMessageConverters().clear();
         restTemplate.getMessageConverters().add(converter);
         return restTemplate;
     }
