@@ -18,6 +18,10 @@ public enum EnergySource {
     EnergySource(boolean isClean) {
         this.isClean = isClean;
     }
+
+    public boolean isClean() {
+        return isClean;
+    }
     public static EnergySource fromApiName(String apiName) {
         try {
             return EnergySource.valueOf(apiName.toUpperCase());
