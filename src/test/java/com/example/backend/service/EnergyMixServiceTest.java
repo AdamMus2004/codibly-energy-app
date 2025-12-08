@@ -15,8 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -57,6 +56,16 @@ public class EnergyMixServiceTest {
         assertEquals(20.0,dailyEnergyMix.getAverageSourcePercentages().get("solar"));
         assertEquals(80.0,dailyEnergyMix.getAverageSourcePercentages().get("gas"));
         assertEquals(20.0, dailyEnergyMix.getCleanEnergyPercentage());
+
+    }
+    @Test
+    void shouldThrowExceptionForInvalidDuration() {
+        assertThrows(IllegalStateException.class, () -> {
+            energyMixService.findOptimalChargingWindow(0);
+        });
+        assertThrows(IllegalStateException.class,()->{
+            energyMixService.findOptimalChargingWindow(7);
+        });
     }
     private GenerationMix createMix(String fuel, Double percentage) {
         GenerationMix generationMix= new GenerationMix();
