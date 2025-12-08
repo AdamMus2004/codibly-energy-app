@@ -27,7 +27,7 @@ public class EnergyMixController {
         return ResponseEntity.ok(summary);
     }
 
-    @GetMapping("/optional-window")
+    @GetMapping("/optimal-window")
     public ResponseEntity<OptimalChargingWindow> getOptimalChargingWindow(@RequestParam(name = "hours") int hours) {
         try {
             OptimalChargingWindow window = energyMixService.findOptimalChargingWindow(hours);
