@@ -17,7 +17,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class EnergyMixServiceTest {
@@ -67,10 +67,42 @@ public class EnergyMixServiceTest {
             energyMixService.findOptimalChargingWindow(7);
         });
     }
+    @Test
+    void shouldFindOptimalChargingWindow() {
+        LocalDateTime tomorowStart = LocalDateTime.now(ZoneOffset.UTC).plusDays(1).withHour(0).withMinute(0);
+        ApiDataInterval bad1 = createInterval(tomorowStart, 0.0);
+        ApiDataInterval bad2 = createInterval(tomorowStart.plusMinutes(30), 0.0);
+        ApiDataInterval bad3 = createInterval(tomorowStart.plusHours(2), 0.0);
+        ApiDataInterval bad4 = createInterval(tomorowStart.plusHours(2).plusMinutes(30), 0.0);
+
+        ApiDataInterval good1 = createInterval(tomorowStart.plusHours(1), 100.0);
+        ApiDataInterval good2 = createInterval(tomorowStart.plusHours(1).plusMinutes(30),100.0);
+
+        ApiResponse mockResponse = new ApiResponse();
+        mockResponse.setData(List.of(bad1,bad2,bad3,bad4,good1,good2));
+
+        when(carbonIntensityApiService.getGenerationMix(any(),any())).thenReturn(mockResponse);
+
+        var window = energyMixService.findOptimalChargingWindow(1);
+
+        assertEquals(tomorowStart.plusHours(1),window.getStartDateTime());
+        assertEquals(100.0, window.getAverageCleanEnergyPercentage());
+
+    }
+
     private GenerationMix createMix(String fuel, Double percentage) {
         GenerationMix generationMix= new GenerationMix();
         generationMix.setFuel(fuel);
         generationMix.setPercentage(percentage);
         return generationMix;
+    }
+    private ApiDataInterval createInterval(LocalDateTime time,double cleanPercentage){
+        ApiDataInterval interval = new ApiDataInterval();
+        interval.setFrom(time);
+        interval.setGenerationMix(List.of(
+                createMix("solar",cleanPercentage),
+                createMix("gas",100.0-cleanPercentage)
+        ));
+        return interval;
     }
 }

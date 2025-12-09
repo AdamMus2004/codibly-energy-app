@@ -134,7 +134,7 @@ public class EnergyMixService {
 
         return OptimalChargingWindow.builder()
                 .startDateTime(startInterval.getFrom())
-                .endDateTime(endInterval.getFrom())
+                .endDateTime(endInterval.getFrom().plusMinutes(30))
                 .averageCleanEnergyPercentage(maxCleanEnergy)
                 .build();
     }
